@@ -1,0 +1,127 @@
+# Query: fetch
+# ContextLines: 1
+
+37 results - 6 files
+
+backend\package-lock.json:
+   326      },
+   327:     "node_modules/@protobufjs/fetch": {
+   328        "version": "1.1.0",
+   329:       "resolved": "https://registry.npmjs.org/@protobufjs/fetch/-/fetch-1.1.0.tgz",
+   330        "integrity": "sha512-lljVXpqXebpsijW71PZaCYeIcE5on1w5DlQy5WH6GLbFryLUrBD4932W/E2BSpfRJWseIL4v/KPgBFxDOIdKpQ==",
+
+  1365          "is-stream": "^2.0.0",
+  1366:         "node-fetch": "^2.6.9",
+  1367          "uuid": "^9.0.1"
+
+  1489          "google-auth-library": "^9.3.0",
+  1490:         "node-fetch": "^2.7.0",
+  1491          "object-hash": "^3.0.0",
+
+  2057      },
+  2058:     "node_modules/node-fetch": {
+  2059        "version": "2.7.0",
+  2060:       "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-2.7.0.tgz",
+  2061        "integrity": "sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==",
+
+  2250          "@protobufjs/eventemitter": "^1.1.0",
+  2251:         "@protobufjs/fetch": "^1.1.0",
+  2252          "@protobufjs/float": "^1.0.2",
+
+  2681          "https-proxy-agent": "^5.0.0",
+  2682:         "node-fetch": "^2.6.9",
+  2683          "stream-events": "^1.0.5",
+
+backend\controllers\geminiController.js:
+  14      const modelsUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+  15:     const modelsResponse = await fetch(modelsUrl);
+  16      const modelsData = await modelsResponse.json();
+
+  19        console.error("ListModels Failed:", modelsData);
+  20:       throw new Error("Could not fetch model list from Google.");
+  21      }
+
+  50  
+  51:     const chatResponse = await fetch(generateUrl, {
+  52        method: 'POST',
+
+backend\controllers\statusController.js:
+  17          reason,
+  18:         studentName: "Alex Student", // In real app, fetch name
+  19          timestamp: new Date().toISOString()
+
+frontend\components\gemini-fab.tsx:
+  56        // 2. CONNECT TO BACKEND (Real AI)
+  57:       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ai/chat`, {
+  58          method: 'POST',
+
+frontend\components\teacher-dashboard.tsx:
+   77  
+   78:   // 1. Fetch Notifications & Tasks
+   79    useEffect(() => {
+   80:     const fetchData = async () => {
+   81        try {
+   82:         // Fetch Notifications
+   83:         const notifRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status/notifications?teacherEmail=teacher@test.com`);
+   84          const notifData = await notifRes.json();
+
+   86  
+   87:         // Fetch Tasks
+   88:         const taskRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks`);
+   89          const taskData = await taskRes.json();
+
+   92        } catch (e) {
+   93:         console.error("Dashboard fetch error", e);
+   94        }
+
+   96      
+   97:     fetchData();
+   98:     const interval = setInterval(fetchData, 5000);
+   99      return () => clearInterval(interval);
+
+  104          const endpoint = action === 'approve' ? '/approve' : '/reject';
+  105:         await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status${endpoint}`, {
+  106              method: 'POST',
+
+  121              try {
+  122:                 const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/check-conflict`, {
+  123                      method: 'POST',
+
+  147      try {
+  148:         const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/create`, {
+  149              method: 'POST',
+
+frontend\components\topbar.tsx:
+   53  
+   54:   // --- 1. FETCH NOTIFICATIONS (Teacher Only) ---
+   55    useEffect(() => {
+   56      if (role === 'teacher') {
+   57:       const fetchNotifs = async () => {
+   58          try {
+   59:           const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status/notifications?teacherEmail=teacher@test.com`);
+   60            const data = await res.json();
+
+   64          } catch (e) {
+   65:           console.error("Failed to fetch notifications");
+   66          }
+
+   68        
+   69:       fetchNotifs();
+   70:       const interval = setInterval(fetchNotifs, 5000);
+   71        return () => clearInterval(interval);
+
+   79          try {
+   80:           const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/status/student@test.com`);
+   81            const data = await res.json();
+
+  115      try {
+  116:       await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status/approve`, {
+  117          method: 'POST',
+
+  143          try {
+  144:             await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/update-status`, {
+  145                  method: 'POST',
+
+  169        try {
+  170:         const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status/request`, {
+  171            method: 'POST',
