@@ -80,12 +80,12 @@ export default function TeacherDashboard({ onClassroomClick }: TeacherDashboardP
     const fetchData = async () => {
       try {
         // Fetch Notifications
-        const notifRes = await fetch('http://localhost:5000/api/status/notifications?teacherEmail=teacher@test.com');
+        const notifRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status/notifications?teacherEmail=teacher@test.com`);
         const notifData = await notifRes.json();
         if (Array.isArray(notifData)) setDashboardRequests(notifData.reverse());
 
         // Fetch Tasks
-        const taskRes = await fetch('http://localhost:5000/api/tasks');
+        const taskRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks`);
         const taskData = await taskRes.json();
         if (Array.isArray(taskData)) setCreatedTasks(taskData);
 
@@ -102,7 +102,7 @@ export default function TeacherDashboard({ onClassroomClick }: TeacherDashboardP
   const handleAction = async (studentEmail: string, action: 'approve' | 'reject') => {
     try {
         const endpoint = action === 'approve' ? '/approve' : '/reject';
-        await fetch(`http://localhost:5000/api/status${endpoint}`, {
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/status${endpoint}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ teacherEmail: "teacher@test.com", studentEmail })
@@ -119,7 +119,7 @@ export default function TeacherDashboard({ onClassroomClick }: TeacherDashboardP
         const checkConflict = async () => {
             setIsChecking(true);
             try {
-                const res = await fetch('http://localhost:5000/api/tasks/check-conflict', {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/check-conflict`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ batch: selectedBatch, date: selectedDate })
@@ -139,37 +139,62 @@ export default function TeacherDashboard({ onClassroomClick }: TeacherDashboardP
   }, [selectedBatch, selectedDate]); 
 
   // --- 3. CREATE TASK LOGIC ---
-  const handleCreateTask = async () => {
-    if (!taskTitle || !selectedBatch || !selectedDate) {
-        alert("Please fill all fields");
-        return;
-    }
-    try {
-        const res = await fetch('http://localhost:5000/api/tasks/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                title: taskTitle,
-                batch: selectedBatch,
-                dueDate: selectedDate
-            })
-        });
-        if (res.ok) {
-            alert("✅ Task Created Successfully!");
-            setIsModalOpen(false);
-            
-            // Refresh list immediately
-            const newTask = { id: Date.now().toString(), title: taskTitle, batch: selectedBatch, dueDate: selectedDate };
-            setCreatedTasks(prev => [newTask, ...prev]);
+const handleCreateTask = async () => {
+  if (!taskTitle || !selectedBatch || !selectedDate) {
+    alert("Please fill all fields");
+    return;
+  }
 
-            setTaskTitle("");
-            setSelectedDate("");
-            setConflictScore(0);
-        }
-    } catch (error) {
-        alert("Failed to create task");
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/create`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: taskTitle,
+          batch: selectedBatch,
+          dueDate: selectedDate,
+        }),
+      }
+    );
+
+    // 🔥 Check if server responded properly
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Server Error:", errorText);
+      throw new Error(`Server responded with ${res.status}`);
     }
-  };
+
+    // ✅ Parse JSON safely
+    const data = await res.json();
+    console.log("Created Task:", data);
+
+    alert("✅ Task Created Successfully!");
+    setIsModalOpen(false);
+
+    // Refresh UI
+    const newTask = {
+      id: data.id || Date.now().toString(),
+      title: taskTitle,
+      batch: selectedBatch,
+      dueDate: selectedDate,
+    };
+
+    setCreatedTasks((prev) => [newTask, ...prev]);
+
+    // Reset fields
+    setTaskTitle("");
+    setSelectedDate("");
+    setConflictScore(0);
+
+  } catch (error) {
+    console.error("Create Task Failed:", error);
+    alert("❌ Failed to create task. Check console for details.");
+  }
+};
 
   return (
     <div className="space-y-6">

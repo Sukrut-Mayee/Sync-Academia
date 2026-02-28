@@ -1,0 +1,25 @@
+# Query: http://localhost:5000
+# ContextLines: 1
+
+5 results - 1 file
+
+frontend\components\teacher-dashboard.tsx:
+   82          // Fetch Notifications
+   83:         const notifRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/status/notifications?teacherEmail=teacher@test.com`);
+   84          const notifData = await notifRes.json();
+
+   87          // Fetch Tasks
+   88:         const taskRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks`);
+   89          const taskData = await taskRes.json();
+
+  104          const endpoint = action === 'approve' ? '/approve' : '/reject';
+  105:         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/status${endpoint}`, {
+  106              method: 'POST',
+
+  121              try {
+  122:                 const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/check-conflict`, {
+  123                      method: 'POST',
+
+  147      try {
+  148:         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/tasks/create`, {
+  149              method: 'POST',
